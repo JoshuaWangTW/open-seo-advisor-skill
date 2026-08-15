@@ -303,3 +303,54 @@ def test_extra_headers_rejects_cookie():
 def test_extra_headers_accepts_accept_language():
     connector = HTTPConnector("https://example.com", extra_headers={"Accept-Language": "en-US"})
     connector.close()
+
+
+@respx.mock
+def test_fetch_url_decodes_non_html_text_bodies():
+    """robots.txt/sitemap.xml 用正確 MIME type 供應時，內容不能被丟掉。
+
+    回歸測試：先前只在 content-type 是 text/html 時才解碼 body，導致
+    text/plain 的 robots.txt 與 text/xml 的 sitemap.xml 一律變成空字串，
+    技術面檢查因此誤報「robots.txt 未宣告 sitemap」與「sitemap 不是合法 XML」。
+    """
+    respx.get("https://example.com/robots.txt").mock(
+        return_value=httpx.Response(
+            200,
+            text="User-agent: *\nSitemap: https://example.com/sitemap.xml\n",
+            headers={"content-type": "text/plain; charset=utf-8"},
+        )
+    )
+    respx.get("https://example.com/sitemap.xml").mock(
+        return_value=httpx.Response(
+            200,
+            text='<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>',
+            headers={"content-type": "text/xml; charset=utf-8"},
+        )
+    )
+    respx.get("https://example.com/").mock(return_value=httpx.Response(200, text="<html></html>"))
+
+    connector = HTTPConnector("https://example.com")
+
+    robots = connector.fetch_url("https://example.com/robots.txt")
+    assert "Sitemap: https://example.com/sitemap.xml" in robots.html
+
+    sitemap = connector.fetch_url("https://example.com/sitemap.xml")
+    assert "<urlset>" in sitemap.html
+
+
+@respx.mock
+def test_fetch_url_skips_binary_bodies():
+    """二進位內容仍然不解碼，避免把圖片/PDF 塞進文字欄位。"""
+    respx.get("https://example.com/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get("https://example.com/sitemap.xml").mock(return_value=httpx.Response(404))
+    respx.get("https://example.com/").mock(return_value=httpx.Response(200, text="<html></html>"))
+    respx.get("https://example.com/cover.png").mock(
+        return_value=httpx.Response(
+            200, content=b"\x89PNG\r\n\x1a\n binary", headers={"content-type": "image/png"}
+        )
+    )
+
+    connector = HTTPConnector("https://example.com")
+    connector.probe()
+
+    assert connector.fetch_url("https://example.com/cover.png").html == ""

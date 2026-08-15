@@ -65,7 +65,7 @@ def crawl_site(
             urljoin(seed_url, "/robots.txt"), fetched_at=fetched_at
         )
         if robots_snapshot.status_code == 200:
-            result.robots_txt = robots_snapshot.html or robots_snapshot.headers.get("_raw_text", "")
+            result.robots_txt = robots_snapshot.html
     except Exception:
         pass
 

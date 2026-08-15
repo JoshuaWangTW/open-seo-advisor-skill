@@ -60,6 +60,31 @@ feature。
 語法檢查，改用結構性驗證（括號配對、`<?php` 開頭、`ABSPATH` 守衛存在性、
 關鍵安全函式呼叫存在性）確保產出正確性。
 
+### Fixed
+
+- **HTTPConnector 丟棄非 HTML 文字內容，造成 robots.txt 與 sitemap.xml
+  的兩項檢查系統性誤報**（`seo_advisor/connectors/http.py`）：先前只在
+  `content-type` 含 `text/html` 時才把 body 解碼進 `PageSnapshot.html`，
+  其餘一律給空字串。但 robots.txt 的正確 MIME type 是 `text/plain`、
+  sitemap.xml 是 `text/xml`/`application/xml`，兩者因此永遠讀到空字串，
+  進而讓 `_check_robots_txt()` 誤報「robots.txt 未宣告 sitemap 位置」、
+  `_check_sitemap()` 對空字串 parse 失敗誤報「sitemap.xml 不是合法的
+  XML 格式」（P1）。**凡是 MIME type 設定正確的網站都會中這兩槍**，
+  且 P1 的高嚴重度會把使用者的注意力導向不存在的問題。
+  改為以 `_is_textual()` 判斷（`text/`、`application/xml`、
+  `application/json`、`+xml`、`+json`），二進位內容仍然不解碼。
+  修正後對一個真實網站複測，誤報消失、健康分數 74 → 87。
+- 移除 `crawler.py` 中 `headers.get("_raw_text")` 這條 fallback：
+  `_raw_text` 從未被任何 connector 寫入，是上述 bug 未完成的補償機制，
+  真正的內容來源修好後不再需要。
+
+### 已知限制（未修，僅記錄）
+
+- 爬蟲不執行 JavaScript，對 client-side rendering 的 SPA 會把
+  「缺 h1」「重複 title」「孤兒頁」全部誤判為問題。這是架構層級的限制，
+  不是這次修復的範圍；報告的「檢查範圍說明」段落已有相關聲明。
+
+
 ## [0.3.4] - 2026-07-13
 
 **Report HTML/PDF 渲染正式上線**（`docs/roadmap.md` v0.3.0 第五批）：

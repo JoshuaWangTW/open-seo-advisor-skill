@@ -61,6 +61,27 @@ def _decode_body(resp: _SafeResponse) -> str:
         return resp.body.decode("utf-8", errors="replace")
 
 
+# robots.txt 是 text/plain、sitemap.xml 是 text/xml 或 application/xml。只解碼
+# text/html 會讓這兩份檔案永遠是空字串，_check_robots_txt() 因此誤報「未宣告
+# sitemap」、_check_sitemap() 對空字串 parse 失敗誤報「不是合法 XML」——凡是
+# MIME type 設定正確的網站都會中這兩槍。LocalArchiveConnector 本來就把任何檔案
+# 內容放進 html 欄位，這裡放寬後兩個 connector 的行為才一致。
+_TEXTUAL_CONTENT_TYPES = (
+    "text/",
+    "application/xml",
+    "application/xhtml",
+    "application/json",
+    "+xml",
+    "+json",
+)
+
+
+def _is_textual(content_type: str) -> bool:
+    """判斷回應是否為可安全解碼成文字的型別（二進位內容一律不解碼）。"""
+    lowered = content_type.lower()
+    return any(marker in lowered for marker in _TEXTUAL_CONTENT_TYPES)
+
+
 class HTTPConnector(WebsiteConnector):
     """透過一般 HTTP 請求存取公開網站，僅發送 GET/HEAD，不需要任何憑證。"""
 
@@ -410,14 +431,14 @@ class HTTPConnector(WebsiteConnector):
         cached = self._response_cache.get(url)
         if cached is not None:
             self._register_final_host(cached.final_url)
-            is_html_cached = "text/html" in cached.headers.get("content-type", "")
+            is_textual_cached = _is_textual(cached.headers.get("content-type", ""))
             return PageSnapshot(
                 url=url,
                 status_code=cached.status_code,
                 final_url=cached.final_url,
                 redirect_chain=cached.history,
                 headers=cached.headers,
-                html=_decode_body(cached) if is_html_cached else "",
+                html=_decode_body(cached) if is_textual_cached else "",
                 fetched_at=fetched_at,
                 elapsed_ms=0,
             )
@@ -430,14 +451,14 @@ class HTTPConnector(WebsiteConnector):
             resp = self._safe_get(url)
             elapsed_ms = int((time.monotonic() - start) * 1000)
             self._register_final_host(resp.final_url)
-            is_html = "text/html" in resp.headers.get("content-type", "")
+            is_textual = _is_textual(resp.headers.get("content-type", ""))
             return PageSnapshot(
                 url=url,
                 status_code=resp.status_code,
                 final_url=resp.final_url,
                 redirect_chain=resp.history,
                 headers=resp.headers,
-                html=_decode_body(resp) if is_html else "",
+                html=_decode_body(resp) if is_textual else "",
                 fetched_at=fetched_at,
                 elapsed_ms=elapsed_ms,
             )
