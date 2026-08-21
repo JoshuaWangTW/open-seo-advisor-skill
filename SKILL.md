@@ -1,5 +1,5 @@
 ---
-name: Open SEO Advisor
+name: open-seo-advisor
 slug: open-seo-advisor
 version: 0.3.5
 license: Apache-2.0
