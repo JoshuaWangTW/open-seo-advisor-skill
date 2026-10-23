@@ -2,6 +2,69 @@
 
 本專案採用 [Semantic Versioning](https://semver.org/)。
 
+## [0.5.0] - 2026-09-23
+
+- 重寫建站引導與 README 的證據界線：公開示範是虛構、`noindex` 的體驗站，不能證明自然搜尋流量、AI 引用、真實交易或 Core Web Vitals 通過。對外成果須分開記錄逐頁技術檢查、實際使用者效能、非品牌搜尋與轉換資料。
+- CLI 加入獨立內容頁輸出與內部連結，為不同訪客問題提供真實 URL、逐頁 title、description、H1、canonical 與 sitemap 項目；正式發布前攔下示範文案與不完整的基線。
+- 為兩個互動示範準備較小的 WebP 及手機首屏圖片，改善茶站量測出的主圖載入瓶頸；保留減少動態與純文字可讀內容。
+- 更新兩個 Cloudflare 公開預覽；同版手機 Lighthouse 模擬中，茶站 LCP 11.0→1.29 秒、工筆 2.11→1.05 秒。這些是實驗室結果，不代表真實使用者的 Core Web Vitals 達標。
+- 主機指南區分 Cloudflare／Firebase 的靜態免費路線，以及 Cloud Run 的帳務要求與超額風險；AEO 指引以 Google 官方文件為界，不保證搜尋或回答引擎引用。
+
+## [0.4.6] - 2026-09-21
+
+- 修正使用者回報的 robots.txt／sitemap.xml 誤判：HTTP 與 WordPress connector 保留有大小限制的文字回應，首次讀取與快取都能交給分析器；有效檔案不再因內容遺失而被扣分。空白、格式錯誤的 sitemap 及缺少 Sitemap 宣告的 robots.txt 仍會正常列出問題。
+- 將 URL 的 `#fragment` 視為同一份文件，避免重複計算頁數、標題與抓取額度；sitemap index 的子檔案共用去重清單，保留不同 query 的網址。
+- 修正 `install.sh` 在部分非 UTF-8 語系出現 `unbound variable` 的問題，並校正 Python 版本判斷。
+- 新增 55 項回歸測試，涵蓋上述回報、編碼、MIME、快取與安裝流程；放寬 Windows CI 的 Node 測試啟動等待時間，避免負載下的偶發逾時。
+
+回報來源：[#7](https://github.com/mars-tw/open-seo-advisor-skill/issues/7)、[#9](https://github.com/mars-tw/open-seo-advisor-skill/issues/9)。感謝 WendaC58 與 dwyanekobe-dev 的重現資訊，以及 [#5](https://github.com/mars-tw/open-seo-advisor-skill/pull/5)、[#8](https://github.com/mars-tw/open-seo-advisor-skill/pull/8) 的修正提案；本版另以 `PageSnapshot.text` 實作文字回應契約。
+
+## [0.4.5] - 2026-09-21
+
+- 加入 OpenCode 安裝與建站指南：專案／全域技能路徑、Build 模式、模型連線與 V1／V2 差異。
+- 附可選 `/seo-website` command 模板，保留使用者的模型、agent 與權限設定。
+- 說明 OpenCode 的 GPT 產圖工具需求，避免把模型登入或圖片附件當作內建產圖能力。
+- 以 OpenCode 1.18.31 實測技能發現、內容讀取與 command 解析；未以付費推論驗證。
+
+## [0.4.4] - 2026-09-18
+
+- 修正工筆範例捲到底部時，固定畫布越過作畫區塊並遮住畫案、說明與頁尾的問題。
+- 以 Grid 同列疊放取代負 margin，保留正確的 sticky 邊界與手機落印操作。
+- 增加真正捲到頁面最底部及段落退出邊界的驗收要求。
+
+## [0.4.3] - 2026-09-18
+
+- 新增《一筆敬意》工筆媽祖畫像網站：畫稿、勾線、分染、敷金與訪客落印的五段捲動敘事。
+- GPT 生成完成稿、同構圖的白描及薄彩版本與畫案素材；用獨立筆路與局部遮罩呈現作畫進度。
+- 提供完整畫像檢視、印字選擇、重看、靜態閱讀及手機完整畫幅；公開部署為第二個 Cloudflare 範例。
+- README 與技能指南並列兩個預覽入口，保留茶葉故事與原始碼。
+
+## [0.4.2] - 2026-09-18
+
+- 公開《一片葉的回家路》預覽，於 README、快速上手、技能入口與建站指南加入直接體驗連結。
+- 提供示範站部署設定與維護說明，僅發布公開靜態資源，保留 noindex 與虛構品牌標示。
+- 章節錨點採用實際導覽列高度，修正直接跳章時畫面已切換但章節編號仍停在上一幕的問題。
+
+## [0.4.1] - 2026-09-18
+
+- 將單圖縮放故事升級為可倒帶的多幕敘事：獨立角色路徑、霧／風／燈火／蒸氣、可選點燈與不同結尾。
+- 新增宣告式場景、主角、操作與原圖座標契約，保持舊 brief 可用。
+- 重做《一片葉的回家路》，提供四幕 GPT 原創場景與真正透明的葉片主角。
+- 敘事規格要求目標、阻力、行動與後果，並逐幕驗證跳章、倒帶、手機及靜態降級。
+- 固定原專案 Ruff 基線規則，避免檢查工具新增預設規則改變既有模組的 CI 範圍。
+
+## [0.4.0] - 2026-09-18（本地衍生版）
+
+- 新增引導式 SEO／AEO 沉浸式建站技能，保留既有稽核／修復／內容／行銷模式。
+- 新增 `website init/build/demo/check`：sales／shop／experience 離線骨架、自然捲動故事、
+  減少動態、語意 HTML、metadata、JSON-LD、robots／sitemap 與草稿 noindex。
+- 加入 GPT 圖文生成與接入、真實商務功能、免費額度主機、無障礙與發布驗收的按需文件。
+- 產出 Cloudflare Workers Static Assets、Firebase Hosting、GCP Cloud Run 設定；不自動部署。
+- 附實際 GPT 生成主視覺的虛構茶屋範例。CLI 的 mock／骨架與完整 agent 成品分開標示。
+- SKILL.md 移除大量歷史敘述，歷史仍保留在本檔與 Git；新增 Codex UI metadata。
+
+此版本為使用者需求的衍生改作，未代表 upstream 已合併或發布。
+
 ## [0.3.5] - Unreleased
 
 **Plugin Dev Mode 正式上線：`schema-generator`**（`docs/roadmap.md`
@@ -59,31 +122,6 @@ feature。
 921+ 個測試通過，ruff 乾淨。因為執行環境沒有 PHP CLI，無法跑 `php -l`
 語法檢查，改用結構性驗證（括號配對、`<?php` 開頭、`ABSPATH` 守衛存在性、
 關鍵安全函式呼叫存在性）確保產出正確性。
-
-### Fixed
-
-- **HTTPConnector 丟棄非 HTML 文字內容，造成 robots.txt 與 sitemap.xml
-  的兩項檢查系統性誤報**（`seo_advisor/connectors/http.py`）：先前只在
-  `content-type` 含 `text/html` 時才把 body 解碼進 `PageSnapshot.html`，
-  其餘一律給空字串。但 robots.txt 的正確 MIME type 是 `text/plain`、
-  sitemap.xml 是 `text/xml`/`application/xml`，兩者因此永遠讀到空字串，
-  進而讓 `_check_robots_txt()` 誤報「robots.txt 未宣告 sitemap 位置」、
-  `_check_sitemap()` 對空字串 parse 失敗誤報「sitemap.xml 不是合法的
-  XML 格式」（P1）。**凡是 MIME type 設定正確的網站都會中這兩槍**，
-  且 P1 的高嚴重度會把使用者的注意力導向不存在的問題。
-  改為以 `_is_textual()` 判斷（`text/`、`application/xml`、
-  `application/json`、`+xml`、`+json`），二進位內容仍然不解碼。
-  修正後對一個真實網站複測，誤報消失、健康分數 74 → 87。
-- 移除 `crawler.py` 中 `headers.get("_raw_text")` 這條 fallback：
-  `_raw_text` 從未被任何 connector 寫入，是上述 bug 未完成的補償機制，
-  真正的內容來源修好後不再需要。
-
-### 已知限制（未修，僅記錄）
-
-- 爬蟲不執行 JavaScript，對 client-side rendering 的 SPA 會把
-  「缺 h1」「重複 title」「孤兒頁」全部誤判為問題。這是架構層級的限制，
-  不是這次修復的範圍；報告的「檢查範圍說明」段落已有相關聲明。
-
 
 ## [0.3.4] - 2026-07-13
 

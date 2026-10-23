@@ -1,5 +1,24 @@
 # 3 分鐘上手：一個指令搞定
 
+**使用 OpenCode？** 先看 [OpenCode 安裝與建站指南](docs/opencode.md)。完整技能可放入網站專案的
+`.opencode/skills/open-seo-advisor/`，在 Build 模式用自然語言啟用，也可安裝附帶的 `/seo-website` 指令。
+以下 Python 安裝步驟供需要離線 CLI 的使用者，不是啟用 OpenCode 技能的必要條件。
+
+**[直接體驗：一片葉的回家路](https://open-seo-advisor-demo.digimkt.workers.dev/)**
+
+不用安裝、下載或登入，就能先看技能做出的故事網站。往下捲動、點亮茶葉，看看結尾
+如何改變；向上捲動可倒帶，關閉動態可改用圖文閱讀。這是虛構品牌示範，不提供預約或收款。
+想看原始碼或在自己電腦開啟，見 [範例與本機預覽](examples/immersive-tea/README.md)。
+
+也可 [體驗《一筆敬意｜工筆媽祖畫像》](https://open-seo-gongbi-demo.digimkt.workers.dev/)：
+點「開始作畫動畫」後捲動，觀看五段作畫敘事，最後選一枚訪客印。
+這是 AI 畫作的互動示範，沒有交易或宗教儀式；[素材與本機預覽](examples/immersive-gongbi/README.md) 另列。
+
+**想建立新網站？** 安裝後輸入 `seo-advisor website init --out ./my-site`，會依序問品牌、
+站型、主機與網域，產生可預覽的網站草稿。或在 coding agent 呼叫 `$open-seo-advisor`，
+由它引導完成 GPT 圖文、故事動畫、SEO／AEO、商務功能與部署。
+詳見 [建站指南](docs/website-builder.md)。以下是原有網站 SEO 健檢的上手流程。
+
 這份指南寫給完全沒有寫過程式、沒有行銷/SEO 背景的人。跟著做，幾分鐘內就能拿到
 一份看得懂的優化報告。
 
